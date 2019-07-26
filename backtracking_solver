@@ -1,0 +1,130 @@
+#include <bits/stdc++.h>
+using namespace std;
+vector <vector <int>> puzzle;
+
+void take_input()
+{
+	for(int i=0; i<9; i++)
+	{
+		vector <int> temp;
+
+		for(int j=0; j<9; j++)
+		{
+			char input;
+			cin>>input;
+			int it = input - '0';
+
+			if(!(1 <= it && it<= 9))
+				it=0;
+			temp.push_back(it);
+		}
+		puzzle.push_back(temp);
+	}
+}
+
+void print_sudoku()
+{
+	cout<<"________________________"<<endl;
+	for(int i=0; i<9; i++)
+	{	cout<<"| ";
+		for(int j=0; j<9; j++)
+			{
+			cout<<puzzle[i][j]<<" ";
+			if(j%3==2)
+				cout<<"| ";
+			}
+		cout<<endl;
+		if(i%3==2)
+			cout<<"|_______|_______|_______|"<<endl;
+
+	}
+}
+
+bool findempty(int &row, int &col)
+{
+	for(row=0; row<9; row++)
+		for(col=0; col<9; col++)
+			if(puzzle[row][col]==0)
+				return true;
+	return false;
+}
+
+bool canputrow(int row, int num)
+{	
+	for(int col=0; col<9; col++)
+		if(puzzle[row][col]==num)
+			return false;
+	return true;
+}
+
+bool canputcol(int col, int num)
+{	
+	for(int row=0; row<9; row++)
+		if(puzzle[row][col]==num)
+			return false;
+	return true;
+}
+
+bool canputbox(int row, int col, int num)
+{	
+	int rowstart = row-row%3;
+	int colstart = col-col%3;
+
+	for(int i = 0; i<3; i++)
+		for(int j = 0; j<3; j++)
+			if(puzzle[rowstart+i][colstart+j]==num)
+				return false;
+	return true;
+}
+
+
+bool canput(int row, int col, int num)
+{
+	if(!canputrow(row,num))
+		return false;
+
+	if(!canputcol(col,num))
+		return false;
+
+	if(!canputbox(row,col,num))
+		return false;
+
+	return true;
+}
+
+
+bool solve_sudoku()
+{
+	int row,col;
+
+	if(!findempty(row,col))
+		return true;
+
+	for(int num=1; num<=9; num++)
+	{
+		if(canput(row,col,num))
+		{	
+			puzzle[row][col]=num;
+
+			if(solve_sudoku())
+				return true;
+
+			puzzle[row][col]=0;
+		}
+
+	}
+
+	return false;
+}
+
+
+int main(void)
+{
+	take_input();
+	
+	if(solve_sudoku())
+		print_sudoku();
+	else
+		cout<<"could not solved!"<<endl;
+
+}
